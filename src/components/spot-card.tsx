@@ -184,7 +184,7 @@ export function SpotCard({ spot, isActive, onClick, isPriority = false }: SpotCa
           </>
         )}
 
-        <div className="absolute top-3 left-3">
+        <div className="absolute top-3 left-3 z-20">
           <Badge
             className={cn(
               "font-medium shadow-sm",
