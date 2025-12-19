@@ -86,22 +86,9 @@ export function SpotCard({ spot, isActive, onClick, isPriority = false }: SpotCa
   
   // Ensure currentImageIndex is always valid
   const safeImageIndex = Math.min(currentImageIndex, spot.imageUrls.length - 1);
-  const currentImageUrl = spot.imageUrls[safeImageIndex] || spot.imageUrls[0];
   
-  // Get indices for preloading (current, next 2, prev 1)
-  const getPreloadIndices = useCallback(() => {
-    if (spot.imageUrls.length <= 1) return [];
-    const indices: number[] = [];
-    // Next 2 images
-    for (let i = 1; i <= 2; i++) {
-      indices.push((safeImageIndex + i) % spot.imageUrls.length);
-    }
-    // Previous 1 image
-    indices.push(safeImageIndex === 0 ? spot.imageUrls.length - 1 : safeImageIndex - 1);
-    return [...new Set(indices)]; // Remove duplicates
-  }, [safeImageIndex, spot.imageUrls.length]);
-  
-  const preloadIndices = getPreloadIndices();
+  // For priority cards, preload first 4 images (covers initial + 2 forward + 1 back)
+  const imagesToPreload = isPriority ? Math.min(4, spot.imageUrls.length) : 1;
 
   return (
     <Card
@@ -117,31 +104,39 @@ export function SpotCard({ spot, isActive, onClick, isPriority = false }: SpotCa
         onTouchMove={hasMultipleImages ? onTouchMove : undefined}
         onTouchEnd={hasMultipleImages ? onTouchEnd : undefined}
       >
-        {!imageError && currentImageUrl && (
+        {/* Render multiple images for priority cards (preloaded), single for others */}
+        {!imageError && spot.imageUrls.slice(0, imagesToPreload).map((url, idx) => (
           <Image
-            src={currentImageUrl}
+            key={`img-${idx}`}
+            src={url}
+            alt={idx === safeImageIndex ? `${spot.name} - ${safeImageIndex + 1}` : ""}
+            fill
+            sizes="(max-width: 768px) 100vw, 40vw"
+            className={cn(
+              "object-cover transition-opacity duration-300",
+              idx === safeImageIndex 
+                ? "opacity-100 z-10 group-hover:scale-105 transition-transform duration-500" 
+                : "opacity-0 z-0"
+            )}
+            onError={idx === safeImageIndex ? () => setImageError(true) : undefined}
+            priority={isPriority && idx === 0}
+            loading={isPriority ? undefined : "lazy"}
+            aria-hidden={idx !== safeImageIndex}
+          />
+        ))}
+        
+        {/* For non-preloaded images, render current one on demand */}
+        {!imageError && safeImageIndex >= imagesToPreload && (
+          <Image
+            src={spot.imageUrls[safeImageIndex]}
             alt={`${spot.name} - ${safeImageIndex + 1}`}
             fill
             sizes="(max-width: 768px) 100vw, 40vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover z-10 transition-transform duration-500 group-hover:scale-105"
             onError={() => setImageError(true)}
-            priority={isPriority && safeImageIndex === 0}
-            loading={isPriority ? undefined : "lazy"}
+            loading="lazy"
           />
         )}
-        
-        {/* Preload adjacent images for smooth swiping - only for priority cards */}
-        {isPriority && preloadIndices.map((idx) => (
-          <Image
-            key={`preload-${idx}`}
-            src={spot.imageUrls[idx]}
-            alt=""
-            fill
-            sizes="(max-width: 768px) 100vw, 40vw"
-            className="opacity-0 pointer-events-none absolute"
-            aria-hidden="true"
-          />
-        ))}
         {imageError && (
           <div className="absolute inset-0 flex items-center justify-center">
             <Waves className="h-12 w-12 text-sky-400/50" />
