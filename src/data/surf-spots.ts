@@ -36,6 +36,7 @@ export const surfSpots: SurfSpot[] = [
     ],
     address: "Липецкая область, Лебедянский район, Покрово-Казацкий сельсовет, слобода Покрово-Инвалидная",
     mapLink: "https://yandex.ru/maps/org/donsurf/50891890844",
+    instructor: "Борис Волобуев",
     bestSeason: "Май-Сентябрь",
   },
   {
