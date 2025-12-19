@@ -74,7 +74,7 @@ export function SpotList({
 
       <div className="p-6 space-y-4">
         {filteredSpots.length > 0 ? (
-          filteredSpots.map((spot) => (
+          filteredSpots.map((spot, index) => (
             <div
               key={spot.id}
               ref={setCardRef(spot.id)}
@@ -83,6 +83,7 @@ export function SpotList({
                 spot={spot}
                 isActive={activeSpotId === spot.id}
                 onClick={() => onSpotClick(spot)}
+                isPriority={index < 2}
               />
             </div>
           ))

@@ -13,6 +13,7 @@ interface SpotCardProps {
   spot: SurfSpot;
   isActive: boolean;
   onClick: () => void;
+  isPriority?: boolean;
 }
 
 const surfTypeLabels: Record<SurfSpot["surfType"], string> = {
@@ -27,7 +28,7 @@ const surfTypeColors: Record<SurfSpot["surfType"], string> = {
   wake: "bg-violet-100 text-violet-800",
 };
 
-export function SpotCard({ spot, isActive, onClick }: SpotCardProps) {
+export function SpotCard({ spot, isActive, onClick, isPriority = false }: SpotCardProps) {
   const [imageError, setImageError] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -124,12 +125,13 @@ export function SpotCard({ spot, isActive, onClick }: SpotCardProps) {
             sizes="(max-width: 768px) 100vw, 40vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             onError={() => setImageError(true)}
-            priority={safeImageIndex === 0}
+            priority={isPriority && safeImageIndex === 0}
+            loading={isPriority ? undefined : "lazy"}
           />
         )}
         
-        {/* Preload adjacent images for smooth swiping */}
-        {preloadIndices.map((idx) => (
+        {/* Preload adjacent images for smooth swiping - only for priority cards */}
+        {isPriority && preloadIndices.map((idx) => (
           <Image
             key={`preload-${idx}`}
             src={spot.imageUrls[idx]}
