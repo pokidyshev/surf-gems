@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { MapPin, Waves, ExternalLink, Calendar, User, Phone, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,24 +31,61 @@ export function SpotCard({ spot, isActive, onClick }: SpotCardProps) {
   const [imageError, setImageError] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Touch swipe support
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+  const minSwipeDistance = 50;
 
-  const handlePrevImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handlePrevImage = useCallback((e?: React.MouseEvent | React.TouchEvent) => {
+    e?.stopPropagation();
     setCurrentImageIndex((prev) => 
       prev === 0 ? spot.imageUrls.length - 1 : prev - 1
     );
     setImageError(false);
-  };
+  }, [spot.imageUrls.length]);
 
-  const handleNextImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleNextImage = useCallback((e?: React.MouseEvent | React.TouchEvent) => {
+    e?.stopPropagation();
     setCurrentImageIndex((prev) => 
       prev === spot.imageUrls.length - 1 ? 0 : prev + 1
     );
     setImageError(false);
+  }, [spot.imageUrls.length]);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchEndX.current = null;
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    
+    const distance = touchStartX.current - touchEndX.current;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe) {
+      e.stopPropagation();
+      handleNextImage();
+    } else if (isRightSwipe) {
+      e.stopPropagation();
+      handlePrevImage();
+    }
+    
+    touchStartX.current = null;
+    touchEndX.current = null;
   };
 
   const hasMultipleImages = spot.imageUrls.length > 1;
+  
+  // Ensure currentImageIndex is always valid
+  const safeImageIndex = Math.min(currentImageIndex, spot.imageUrls.length - 1);
+  const currentImageUrl = spot.imageUrls[safeImageIndex] || spot.imageUrls[0];
 
   return (
     <Card
@@ -58,15 +95,19 @@ export function SpotCard({ spot, isActive, onClick }: SpotCardProps) {
       )}
       onClick={onClick}
     >
-      <div className="relative aspect-4/5 overflow-hidden bg-linear-to-br from-sky-100 to-blue-200">
-        {!imageError && (
+      <div 
+        className="relative aspect-4/5 overflow-hidden bg-linear-to-br from-sky-100 to-blue-200"
+        onTouchStart={hasMultipleImages ? onTouchStart : undefined}
+        onTouchMove={hasMultipleImages ? onTouchMove : undefined}
+        onTouchEnd={hasMultipleImages ? onTouchEnd : undefined}
+      >
+        {!imageError && currentImageUrl && (
           <Image
-            src={spot.imageUrls[currentImageIndex]}
-            alt={`${spot.name} - ${currentImageIndex + 1}`}
+            src={currentImageUrl}
+            alt={`${spot.name} - ${safeImageIndex + 1}`}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             onError={() => setImageError(true)}
-            unoptimized
           />
         )}
         {imageError && (
@@ -79,18 +120,22 @@ export function SpotCard({ spot, isActive, onClick }: SpotCardProps) {
         {hasMultipleImages && !imageError && (
           <>
             <Button
+              type="button"
               variant="ghost"
               size="icon"
-              className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white opacity-70 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
               onClick={handlePrevImage}
+              aria-label="Previous image"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <Button
+              type="button"
               variant="ghost"
               size="icon"
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white opacity-70 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
               onClick={handleNextImage}
+              aria-label="Next image"
             >
               <ChevronRight className="h-5 w-5" />
             </Button>
@@ -102,7 +147,7 @@ export function SpotCard({ spot, isActive, onClick }: SpotCardProps) {
                   key={index}
                   className={cn(
                     "h-1.5 w-1.5 rounded-full transition-all",
-                    index === currentImageIndex
+                    index === safeImageIndex
                       ? "bg-white w-4"
                       : "bg-white/50"
                   )}

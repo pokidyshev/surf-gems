@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { SpotCard } from "./spot-card";
 import { SurfTypeFilter } from "./surf-type-filter";
 import { SurfSpot } from "@/data/surf-spots";
@@ -21,17 +21,29 @@ export function SpotList({
   selectedType,
   onSelectType,
 }: SpotListProps) {
-  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
+  
+  const setCardRef = useCallback((id: string) => (el: HTMLDivElement | null) => {
+    if (el) {
+      cardRefs.current.set(id, el);
+    } else {
+      cardRefs.current.delete(id);
+    }
+  }, []);
 
   useEffect(() => {
     if (activeSpotId) {
-      const cardEl = cardRefs.current.get(activeSpotId);
-      if (cardEl) {
-        cardEl.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-      }
+      // Small delay to ensure DOM is ready
+      const timer = setTimeout(() => {
+        const cardEl = cardRefs.current.get(activeSpotId);
+        if (cardEl) {
+          cardEl.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [activeSpotId]);
 
@@ -65,9 +77,7 @@ export function SpotList({
           filteredSpots.map((spot) => (
             <div
               key={spot.id}
-              ref={(el) => {
-                if (el) cardRefs.current.set(spot.id, el);
-              }}
+              ref={setCardRef(spot.id)}
             >
               <SpotCard
                 spot={spot}

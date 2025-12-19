@@ -23,6 +23,10 @@ export default function Home() {
 
   const handleSpotClick = (spot: SurfSpot) => {
     setActiveSpotId(spot.id);
+    // On mobile, switch to map view when clicking a spot
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setShowMap(true);
+    }
   };
 
   const handleMarkerClick = (spot: SurfSpot) => {

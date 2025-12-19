@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Surf Gems | Discover the World's Best Surf Spots",
-  description: "Explore world-class surf destinations from Uluwatu to Pipeline. Your guide to finding the perfect wave.",
+  title: "Niki's Surf Gems",
+  description: "Niki's guide to the best surf spots around the world. From river waves to ocean breaks.",
 };
 
 export default function RootLayout({

@@ -1,36 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { SurfSpot } from "@/data/surf-spots";
-
-// Fix for default marker icons in Leaflet with webpack
-const defaultIcon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
-
-const activeIcon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [30, 49],
-  iconAnchor: [15, 49],
-  popupAnchor: [1, -40],
-  shadowSize: [49, 49],
-  className: "active-marker",
-});
-
-L.Marker.prototype.options.icon = defaultIcon;
 
 interface MapViewProps {
   spots: SurfSpot[];
@@ -48,9 +22,17 @@ function MapController({
 
   useEffect(() => {
     if (activeSpot && initialFlyDone.current) {
-      map.flyTo(activeSpot.coordinates, 10, {
-        duration: 1.5,
-      });
+      try {
+        const [lat, lng] = activeSpot.coordinates;
+        if (isFinite(lat) && isFinite(lng)) {
+          // Stop any current animation first
+          map.stop();
+          // Use setView with animation instead of flyTo to avoid race conditions
+          map.setView([lat, lng], 10, { animate: true, duration: 1 });
+        }
+      } catch {
+        // Ignore animation errors
+      }
     }
     initialFlyDone.current = true;
   }, [activeSpot, map]);
@@ -60,15 +42,55 @@ function MapController({
 
 export function MapView({ spots, activeSpotId, onMarkerClick }: MapViewProps) {
   const activeSpot = spots.find((s) => s.id === activeSpotId) || null;
+  
+  // Create icons using useMemo to avoid recreating on every render
+  const { defaultIcon, activeIcon } = useMemo(() => {
+    const defaultIcon = L.icon({
+      iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+      iconRetinaUrl:
+        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+      shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+    });
+
+    const activeIcon = L.icon({
+      iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+      iconRetinaUrl:
+        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+      shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      iconSize: [30, 49],
+      iconAnchor: [15, 49],
+      popupAnchor: [1, -40],
+      shadowSize: [49, 49],
+      className: "active-marker",
+    });
+
+    return { defaultIcon, activeIcon };
+  }, []);
 
   // Calculate center based on all spots or default to world center
-  const center: [number, number] =
-    spots.length > 0
-      ? [
-          spots.reduce((sum, s) => sum + s.coordinates[0], 0) / spots.length,
-          spots.reduce((sum, s) => sum + s.coordinates[1], 0) / spots.length,
-        ]
-      : [20, 0];
+  const center: [number, number] = useMemo(() => {
+    if (spots.length === 0) return [20, 0] as [number, number];
+    
+    const validSpots = spots.filter(s => 
+      Array.isArray(s.coordinates) && 
+      s.coordinates.length === 2 &&
+      typeof s.coordinates[0] === 'number' && 
+      typeof s.coordinates[1] === 'number' &&
+      !isNaN(s.coordinates[0]) && 
+      !isNaN(s.coordinates[1])
+    );
+    
+    if (validSpots.length === 0) return [20, 0] as [number, number];
+    
+    return [
+      validSpots.reduce((sum, s) => sum + s.coordinates[0], 0) / validSpots.length,
+      validSpots.reduce((sum, s) => sum + s.coordinates[1], 0) / validSpots.length,
+    ] as [number, number];
+  }, [spots]);
 
   return (
     <div className="h-full w-full relative">
@@ -90,7 +112,9 @@ export function MapView({ spots, activeSpotId, onMarkerClick }: MapViewProps) {
             position={spot.coordinates}
             icon={spot.id === activeSpotId ? activeIcon : defaultIcon}
             eventHandlers={{
-              click: () => onMarkerClick(spot),
+              click: () => {
+                onMarkerClick(spot);
+              },
             }}
           >
             <Popup>
