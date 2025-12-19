@@ -18,23 +18,29 @@ function MapController({
   activeSpot: SurfSpot | null;
 }) {
   const map = useMap();
-  const initialFlyDone = useRef(false);
+  const lastSpotIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (activeSpot && initialFlyDone.current) {
-      try {
-        const [lat, lng] = activeSpot.coordinates;
-        if (isFinite(lat) && isFinite(lng)) {
-          // Stop any current animation first
-          map.stop();
-          // Use setView with animation instead of flyTo to avoid race conditions
-          map.setView([lat, lng], 10, { animate: true, duration: 1 });
-        }
-      } catch {
-        // Ignore animation errors
-      }
+    if (!activeSpot) {
+      lastSpotIdRef.current = null;
+      return;
     }
-    initialFlyDone.current = true;
+
+    // Skip if we already flew to this spot
+    if (lastSpotIdRef.current === activeSpot.id) {
+      return;
+    }
+
+    try {
+      const [lat, lng] = activeSpot.coordinates;
+      if (isFinite(lat) && isFinite(lng)) {
+        map.stop();
+        map.setView([lat, lng], 10, { animate: true, duration: 1 });
+        lastSpotIdRef.current = activeSpot.id;
+      }
+    } catch {
+      // Ignore animation errors
+    }
   }, [activeSpot, map]);
 
   return null;
