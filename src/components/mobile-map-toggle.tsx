@@ -19,12 +19,12 @@ export function MobileMapToggle({ showMap, onClick }: MobileMapToggleProps) {
         {showMap ? (
           <>
             <List className="h-4 w-4" />
-            Show List
+            Показать список
           </>
         ) : (
           <>
             <Map className="h-4 w-4" />
-            Show Map
+            Показать карту
           </>
         )}
       </Button>

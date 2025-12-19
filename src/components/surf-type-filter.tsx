@@ -15,19 +15,19 @@ const surfTypeConfig: Record<
   { label: string; icon: React.ReactNode; color: string; activeColor: string }
 > = {
   ocean: {
-    label: "Ocean",
+    label: "Океан",
     icon: <Waves className="h-3.5 w-3.5" />,
     color: "bg-blue-50 text-blue-700 border-blue-200",
     activeColor: "bg-blue-600 text-white border-blue-600",
   },
   rapid: {
-    label: "River Rapid",
+    label: "Речная волна",
     icon: <Wind className="h-3.5 w-3.5" />,
     color: "bg-emerald-50 text-emerald-700 border-emerald-200",
     activeColor: "bg-emerald-600 text-white border-emerald-600",
   },
   wake: {
-    label: "Wakesurf",
+    label: "Вейксёрф",
     icon: <Droplets className="h-3.5 w-3.5" />,
     color: "bg-violet-50 text-violet-700 border-violet-200",
     activeColor: "bg-violet-600 text-white border-violet-600",
@@ -40,7 +40,7 @@ export function SurfTypeFilter({
 }: SurfTypeFilterProps) {
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      <span className="text-sm font-medium text-slate-600">Type:</span>
+      <span className="text-sm font-medium text-slate-600">Тип:</span>
       {(Object.keys(surfTypeConfig) as SurfSpot["surfType"][]).map((type) => {
         const isSelected = selectedType === type;
         const config = surfTypeConfig[type];
@@ -65,7 +65,7 @@ export function SurfTypeFilter({
           onClick={() => onSelectType(null)}
           className="text-xs text-slate-500 hover:text-slate-700 underline ml-1"
         >
-          Show all
+          Показать все
         </button>
       )}
     </div>

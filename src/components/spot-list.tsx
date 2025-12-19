@@ -61,8 +61,8 @@ export function SpotList({
           <div>
             <h1 className="text-xl font-bold text-slate-900">Surf Gems</h1>
             <p className="text-sm text-muted-foreground">
-              {filteredSpots.length} spot{filteredSpots.length !== 1 ? "s" : ""} 
-              {selectedType && ` (filtered from ${spots.length})`}
+              {filteredSpots.length} {filteredSpots.length === 1 ? "спот" : filteredSpots.length < 5 ? "спота" : "спотов"}
+              {selectedType && ` (отфильтровано из ${spots.length})`}
             </p>
           </div>
         </div>
@@ -90,12 +90,12 @@ export function SpotList({
         ) : (
           <div className="text-center py-12 text-slate-500">
             <Waves className="h-12 w-12 mx-auto mb-3 text-slate-300" />
-            <p className="text-sm">No spots match your filter</p>
+            <p className="text-sm">Нет спотов по вашему фильтру</p>
             <button
               onClick={() => onSelectType(null)}
               className="text-xs text-primary hover:underline mt-2"
             >
-              Show all
+              Показать все
             </button>
           </div>
         )}
