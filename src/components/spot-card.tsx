@@ -18,7 +18,7 @@ interface SpotCardProps {
 
 const surfTypeLabels: Record<SurfSpot["surfType"], string> = {
   ocean: "Океан",
-  rapid: "Речная волна",
+  rapid: "Искусственная волна",
   wake: "Вейксёрф",
 };
 

@@ -21,7 +21,7 @@ const surfTypeConfig: Record<
     activeColor: "bg-blue-600 text-white border-blue-600",
   },
   rapid: {
-    label: "Речная волна",
+    label: "Искусственная волна",
     icon: <Wind className="h-3.5 w-3.5" />,
     color: "bg-emerald-50 text-emerald-700 border-emerald-200",
     activeColor: "bg-emerald-600 text-white border-emerald-600",
