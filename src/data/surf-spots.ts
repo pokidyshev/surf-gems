@@ -70,7 +70,7 @@ export const surfSpots: SurfSpot[] = [
     coordinates: [55.802867, 37.425734],
     imageUrls: [
       "/images/spots/strogino/IMG_0164.JPG",
-      "/images/spots/strogino/IMG_0162.PNG",
+      "/images/spots/strogino/IMG_0162.jpg",
       "/images/spots/strogino/IMG_0163.JPG",
     ],
     address: "Большой Строгинский затон, Москва",
@@ -88,9 +88,9 @@ export const surfSpots: SurfSpot[] = [
     surfType: "wake",
     coordinates: [43.581641, 39.718186],
     imageUrls: [
-      "/images/spots/sochi-wake/IMG_0152.PNG",
-      "/images/spots/sochi-wake/IMG_0153.PNG",
-      "/images/spots/sochi-wake/IMG_0154.PNG",
+      "/images/spots/sochi-wake/IMG_0152.jpg",
+      "/images/spots/sochi-wake/IMG_0153.jpg",
+      "/images/spots/sochi-wake/IMG_0154.jpg",
     ],
     address: "Морской порт, центр Сочи",
     mapLink: "https://yandex.ru/maps/org/lucky_duck_surf/97112615546",
@@ -151,7 +151,7 @@ export const surfSpots: SurfSpot[] = [
     coordinates: [51.827467, 39.280757],
     imageUrls: [
       "/images/spots/voronezh/IMG_7601.jpeg",
-      "/images/spots/voronezh/IMG_0161.PNG",
+      "/images/spots/voronezh/IMG_0161.jpg",
       "/images/spots/voronezh/IMG_7631.jpeg",
     ],
     address: "Воронеж, Чертовицы",
@@ -284,7 +284,7 @@ export const surfSpots: SurfSpot[] = [
     coordinates: [39.3736, -9.3393],
     imageUrls: [
       "/images/spots/baleal/IMG_3002.JPG",
-      "/images/spots/baleal/IMG_0168.PNG",
+      "/images/spots/baleal/IMG_0168.jpg",
       "/images/spots/baleal/IMG_2906.JPG",
       "/images/spots/baleal/IMG_2918.JPG",
       "/images/spots/baleal/IMG_2929.JPG",
