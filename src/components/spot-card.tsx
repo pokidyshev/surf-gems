@@ -86,6 +86,21 @@ export function SpotCard({ spot, isActive, onClick }: SpotCardProps) {
   // Ensure currentImageIndex is always valid
   const safeImageIndex = Math.min(currentImageIndex, spot.imageUrls.length - 1);
   const currentImageUrl = spot.imageUrls[safeImageIndex] || spot.imageUrls[0];
+  
+  // Get indices for preloading (current, next 2, prev 1)
+  const getPreloadIndices = useCallback(() => {
+    if (spot.imageUrls.length <= 1) return [];
+    const indices: number[] = [];
+    // Next 2 images
+    for (let i = 1; i <= 2; i++) {
+      indices.push((safeImageIndex + i) % spot.imageUrls.length);
+    }
+    // Previous 1 image
+    indices.push(safeImageIndex === 0 ? spot.imageUrls.length - 1 : safeImageIndex - 1);
+    return [...new Set(indices)]; // Remove duplicates
+  }, [safeImageIndex, spot.imageUrls.length]);
+  
+  const preloadIndices = getPreloadIndices();
 
   return (
     <Card
@@ -108,8 +123,21 @@ export function SpotCard({ spot, isActive, onClick }: SpotCardProps) {
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             onError={() => setImageError(true)}
+            priority={safeImageIndex === 0}
           />
         )}
+        
+        {/* Preload adjacent images for smooth swiping */}
+        {preloadIndices.map((idx) => (
+          <Image
+            key={`preload-${idx}`}
+            src={spot.imageUrls[idx]}
+            alt=""
+            fill
+            className="opacity-0 pointer-events-none absolute"
+            aria-hidden="true"
+          />
+        ))}
         {imageError && (
           <div className="absolute inset-0 flex items-center justify-center">
             <Waves className="h-12 w-12 text-sky-400/50" />
