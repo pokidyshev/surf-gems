@@ -150,7 +150,7 @@ export function SpotCard({ spot, isActive, onClick, isPriority = false }: SpotCa
               type="button"
               variant="ghost"
               size="icon"
-              className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white opacity-70 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+              className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white opacity-70 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-20"
               onClick={handlePrevImage}
               aria-label="Previous image"
             >
@@ -160,7 +160,7 @@ export function SpotCard({ spot, isActive, onClick, isPriority = false }: SpotCa
               type="button"
               variant="ghost"
               size="icon"
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white opacity-70 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white opacity-70 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-20"
               onClick={handleNextImage}
               aria-label="Next image"
             >
@@ -168,7 +168,7 @@ export function SpotCard({ spot, isActive, onClick, isPriority = false }: SpotCa
             </Button>
 
             {/* Image Counter Dots */}
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
               {spot.imageUrls.map((_, index) => (
                 <div
                   key={index}
