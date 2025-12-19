@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { MapPin, Waves, ExternalLink, Calendar, User, Phone, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -57,12 +58,13 @@ export function SpotCard({ spot, isActive, onClick }: SpotCardProps) {
       )}
       onClick={onClick}
     >
-      <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-sky-100 to-blue-200">
+      <div className="relative aspect-4/5 overflow-hidden bg-linear-to-br from-sky-100 to-blue-200">
         {!imageError && (
-          <img
+          <Image
             src={spot.imageUrls[currentImageIndex]}
             alt={`${spot.name} - ${currentImageIndex + 1}`}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
             onError={() => setImageError(true)}
           />
         )}
@@ -174,25 +176,25 @@ export function SpotCard({ spot, isActive, onClick }: SpotCardProps) {
           <div className="mt-3 pt-3 border-t space-y-1.5">
             {spot.address && (
               <div className="flex items-start gap-1.5 text-xs">
-                <MapPin className="h-3 w-3 text-slate-400 mt-0.5 flex-shrink-0" />
+                <MapPin className="h-3 w-3 text-slate-400 mt-0.5 shrink-0" />
                 <span className="text-slate-600">{spot.address}</span>
               </div>
             )}
             {spot.bestSeason && (
               <div className="flex items-center gap-1.5 text-xs">
-                <Calendar className="h-3 w-3 text-slate-400 flex-shrink-0" />
+                <Calendar className="h-3 w-3 text-slate-400 shrink-0" />
                 <span className="text-slate-600">{spot.bestSeason}</span>
               </div>
             )}
             {spot.instructor && (
               <div className="flex items-center gap-1.5 text-xs">
-                <User className="h-3 w-3 text-slate-400 flex-shrink-0" />
+                <User className="h-3 w-3 text-slate-400 shrink-0" />
                 <span className="text-slate-600">{spot.instructor}</span>
               </div>
             )}
             {spot.contact && (
               <div className="flex items-center gap-1.5 text-xs">
-                <Phone className="h-3 w-3 text-slate-400 flex-shrink-0" />
+                <Phone className="h-3 w-3 text-slate-400 shrink-0" />
                 {spot.contact.startsWith('http') ? (
                   <a
                     href={spot.contact}
