@@ -66,6 +66,7 @@ export function SpotCard({ spot, isActive, onClick }: SpotCardProps) {
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             onError={() => setImageError(true)}
+            unoptimized
           />
         )}
         {imageError && (
