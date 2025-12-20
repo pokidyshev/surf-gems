@@ -72,7 +72,7 @@ export function SpotList({
         />
       </div>
 
-      <div className="p-6 space-y-4">
+      <div className="p-6 pb-24 md:pb-6 space-y-4">
         {filteredSpots.length > 0 ? (
           filteredSpots.map((spot, index) => (
             <div
