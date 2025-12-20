@@ -125,7 +125,12 @@ export function MapView({ spots, activeSpotId, onMarkerClick }: MapViewProps) {
           >
             <Popup>
               <div className="min-w-[150px]">
-                <h3 className="font-semibold text-slate-900">{spot.name}</h3>
+                <h3 
+                  className="font-semibold text-slate-900 cursor-pointer hover:text-primary transition-colors"
+                  onClick={() => onMarkerClick(spot)}
+                >
+                  {spot.name}
+                </h3>
                 <p className="text-xs text-slate-600">{spot.location}</p>
               </div>
             </Popup>
