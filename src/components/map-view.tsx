@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { SurfSpot } from "@/data/surf-spots";
+import { Waves, Calendar } from "lucide-react";
 
 interface MapViewProps {
   spots: SurfSpot[];
@@ -45,6 +46,18 @@ function MapController({
 
   return null;
 }
+
+const surfTypeLabels: Record<SurfSpot["surfType"], string> = {
+  ocean: "Океан",
+  rapid: "Rapid",
+  wake: "Вейк",
+};
+
+const surfTypeColors: Record<SurfSpot["surfType"], string> = {
+  ocean: "bg-blue-100 text-blue-800",
+  rapid: "bg-emerald-100 text-emerald-800",
+  wake: "bg-violet-100 text-violet-800",
+};
 
 export function MapView({ spots, activeSpotId, onMarkerClick }: MapViewProps) {
   const activeSpot = spots.find((s) => s.id === activeSpotId) || null;
@@ -124,14 +137,43 @@ export function MapView({ spots, activeSpotId, onMarkerClick }: MapViewProps) {
             }}
           >
             <Popup>
-              <div className="min-w-[150px]">
-                <h3 
-                  className="font-semibold text-slate-900 cursor-pointer hover:text-primary transition-colors"
-                  onClick={() => onMarkerClick(spot)}
-                >
+              <div className="min-w-[200px] max-w-[250px]">
+                <h3 className="font-semibold text-slate-900 mb-1">
                   {spot.name}
                 </h3>
-                <p className="text-xs text-slate-600">{spot.location}</p>
+                <p className="text-xs text-slate-600 mb-2">{spot.location}</p>
+                
+                {/* Wave Type Badge */}
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${surfTypeColors[spot.surfType]}`}>
+                    <Waves className="h-3 w-3" />
+                    {surfTypeLabels[spot.surfType]}
+                  </span>
+                </div>
+                
+                {/* Best Season */}
+                {spot.bestSeason && (
+                  <div className="flex items-center gap-1.5 text-xs text-slate-600 mb-3">
+                    <Calendar className="h-3 w-3 text-slate-400" />
+                    <span>{spot.bestSeason}</span>
+                  </div>
+                )}
+                
+                {/* Go to spot button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMarkerClick(spot);
+                  }}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    onMarkerClick(spot);
+                  }}
+                  className="w-full bg-primary hover:bg-primary/90 text-white text-xs font-medium py-1.5 px-3 rounded transition-colors"
+                >
+                  Перейти к споту
+                </button>
               </div>
             </Popup>
           </Marker>
