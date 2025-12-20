@@ -21,13 +21,13 @@ const surfTypeConfig: Record<
     activeColor: "bg-blue-600 text-white border-blue-600",
   },
   rapid: {
-    label: "Искусственная волна",
+    label: "Rapid",
     icon: <Wind className="h-3.5 w-3.5" />,
     color: "bg-emerald-50 text-emerald-700 border-emerald-200",
     activeColor: "bg-emerald-600 text-white border-emerald-600",
   },
   wake: {
-    label: "Вейксёрф",
+    label: "Вейк",
     icon: <Droplets className="h-3.5 w-3.5" />,
     color: "bg-violet-50 text-violet-700 border-violet-200",
     activeColor: "bg-violet-600 text-white border-violet-600",
