@@ -11,12 +11,15 @@ interface MapViewProps {
   spots: SurfSpot[];
   activeSpotId: string | null;
   onMarkerClick: (spot: SurfSpot) => void;
+  onGoToList?: () => void;
 }
 
 function MapController({
   activeSpot,
+  markerRefs,
 }: {
   activeSpot: SurfSpot | null;
+  markerRefs: React.MutableRefObject<Map<string, L.Marker>>;
 }) {
   const map = useMap();
   const lastSpotIdRef = useRef<string | null>(null);
@@ -38,11 +41,19 @@ function MapController({
         map.stop();
         map.setView([lat, lng], 10, { animate: true, duration: 1 });
         lastSpotIdRef.current = activeSpot.id;
+        
+        // Open popup after map animation
+        setTimeout(() => {
+          const marker = markerRefs.current.get(activeSpot.id);
+          if (marker) {
+            marker.openPopup();
+          }
+        }, 300);
       }
     } catch {
       // Ignore animation errors
     }
-  }, [activeSpot, map]);
+  }, [activeSpot, map, markerRefs]);
 
   return null;
 }
@@ -59,8 +70,9 @@ const surfTypeColors: Record<SurfSpot["surfType"], string> = {
   wake: "bg-violet-100 text-violet-800",
 };
 
-export function MapView({ spots, activeSpotId, onMarkerClick }: MapViewProps) {
+export function MapView({ spots, activeSpotId, onMarkerClick, onGoToList }: MapViewProps) {
   const activeSpot = spots.find((s) => s.id === activeSpotId) || null;
+  const markerRefs = useRef<Map<string, L.Marker>>(new Map());
   
   // Create icons using useMemo to avoid recreating on every render
   const { defaultIcon, activeIcon } = useMemo(() => {
@@ -124,12 +136,17 @@ export function MapView({ spots, activeSpotId, onMarkerClick }: MapViewProps) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
-        <MapController activeSpot={activeSpot} />
+        <MapController activeSpot={activeSpot} markerRefs={markerRefs} />
         {spots.map((spot) => (
           <Marker
             key={spot.id}
             position={spot.coordinates}
             icon={spot.id === activeSpotId ? activeIcon : defaultIcon}
+            ref={(ref) => {
+              if (ref) {
+                markerRefs.current.set(spot.id, ref);
+              }
+            }}
             eventHandlers={{
               click: () => {
                 onMarkerClick(spot);
@@ -160,20 +177,18 @@ export function MapView({ spots, activeSpotId, onMarkerClick }: MapViewProps) {
                 )}
                 
                 {/* Go to spot button */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onMarkerClick(spot);
-                  }}
-                  onTouchEnd={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    onMarkerClick(spot);
-                  }}
-                  className="w-full bg-primary hover:bg-primary/90 text-white text-xs font-medium py-1.5 px-3 rounded transition-colors"
-                >
-                  Перейти к споту
-                </button>
+                {onGoToList && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onMarkerClick(spot);
+                      onGoToList();
+                    }}
+                    className="w-full bg-primary hover:bg-primary/90 text-white text-xs font-medium py-1.5 px-3 rounded transition-colors active:bg-primary/80"
+                  >
+                    Перейти к споту
+                  </button>
+                )}
               </div>
             </Popup>
           </Marker>

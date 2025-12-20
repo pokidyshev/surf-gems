@@ -78,6 +78,7 @@ export default function Home() {
               spots={filteredSpots}
               activeSpotId={activeSpotId}
               onMarkerClick={handleMarkerClick}
+              onGoToList={() => setShowMap(false)}
             />
           </div>
         ) : (
