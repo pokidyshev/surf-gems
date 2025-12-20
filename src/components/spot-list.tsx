@@ -99,6 +99,33 @@ export function SpotList({
             </button>
           </div>
         )}
+        
+        {/* Footer */}
+        <div className="pt-8 pb-4 border-t border-slate-100 mt-8">
+          <p className="text-center text-sm text-slate-500">
+            <a 
+              href="https://t.me/pokidyshev" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline font-medium"
+            >
+              Никита
+            </a>
+            {" "}сделал этот серф-гид для{" "}
+            <a 
+              href="https://t.me/s1ddok" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:underline font-medium"
+            >
+              Андрея
+            </a>
+            {" "}на 30-летие 🎂
+          </p>
+          <p className="text-center text-xs text-slate-400 mt-1">
+            Catch the wave! 🏄‍♂️
+          </p>
+        </div>
       </div>
     </div>
   );
