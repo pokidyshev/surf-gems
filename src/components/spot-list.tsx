@@ -53,7 +53,7 @@ export function SpotList({
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b px-6 py-4 space-y-3">
+      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b px-6 py-4 space-y-3">
         <div className="flex items-center gap-2">
           <div className="p-2 rounded-xl bg-primary/10">
             <Waves className="h-5 w-5 text-primary" />
